@@ -638,6 +638,7 @@ Defines where to output files and thumbnails after all post-processing has compl
          download_archive_name: ".ytdl-sub-{subscription_name}-download-archive.json"
          migrated_download_archive_name: ".ytdl-sub-{subscription_name_sanitized}-download-archive.json"
          maintain_download_archive: True
+         removed_file_cleanup: False
          keep_files_before: now
          keep_files_after: 19000101
 
@@ -711,6 +712,18 @@ Defines where to output files and thumbnails after all post-processing has compl
   The download archive contains a mapping of ytdl IDs to downloaded files. This is used to
   create a ytdl download-archive file when invoking a download on a subscription. This will
   prevent ytdl from redownloading media already downloaded.
+
+  Defaults to False.
+
+
+``removed_file_cleanup``
+
+:expected type: Optional[Boolean]
+:description:
+  Requires ``maintain_download_archive`` set to True.
+
+  Deletes any files that are no longer in the current list. This is useful for keeping the
+  output directory clean of files that are no longer in the subscription or playlist.
 
   Defaults to False.
 

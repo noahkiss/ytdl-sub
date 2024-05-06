@@ -177,6 +177,15 @@ class BaseSubscription(ABC):
         return self.output_options.maintain_download_archive
 
     @property
+    def removed_file_cleanup(self) -> bool:
+        """
+        Returns
+        -------
+        Whether to delete files that are no longer in the current list of entries
+        """
+        return self.output_options.removed_file_cleanup
+
+    @property
     def num_entries_added(self) -> int:
         """
         Returns

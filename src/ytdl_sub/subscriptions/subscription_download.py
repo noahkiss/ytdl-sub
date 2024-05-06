@@ -298,6 +298,8 @@ class SubscriptionDownload(BaseSubscription, ABC):
         downloader: SourcePlugin,
         dry_run: bool,
     ) -> FileHandlerTransactionLog:
+        processed_entry_ids = []
+
         with self._subscription_download_context_managers():
             for entry in downloader.download_metadata():
                 if (entry := self._preprocess_entry(plugins=plugins, entry=entry)) is None:
@@ -319,6 +321,11 @@ class SubscriptionDownload(BaseSubscription, ABC):
                     self._process_entry(
                         plugins=plugins, dry_run=dry_run, entry=entry, entry_metadata=entry_metadata
                     )
+
+                processed_entry_ids.append(entry.id)
+
+        if self.removed_file_cleanup:
+            self.download_archive.remove_unmatched_files(entry_ids=processed_entry_ids)
 
         for plugin in plugins:
             plugin.post_process_subscription()
