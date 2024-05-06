@@ -591,7 +591,7 @@ class EnhancedDownloadArchive:
 
         return self
 
-    def remove_unmatched_files(self, entry_ids: List[str]):
+    def remove_unmatched_files(self, entries: List[Entry]):
         """
         Checks all entries within the mappings. If any entries do not match the files in the output, delete them.
 
@@ -604,10 +604,15 @@ class EnhancedDownloadArchive:
 
         logger.info("Checking for unmatched files in the output directory")
         logger.info("IDs in the mapping: %s", list(mappings.keys()))
-        logger.info("IDs to keep: %s", entry_ids)
+        logger.info("IDs to keep: %s", list(entries.keys()))
+
+        # look through entries and log the object
+        for entry in entries:
+            logger.info("Logging entries")
+            logger.info("Entry %s: %s", entry.uid, entry)
 
         for uid, mapping in list(mappings.items()):
-            if uid not in entry_ids:
+            if uid not in list(entries.keys()):
                 logger.info("Removing unmatched files for entry %s", uid)
                 logger.info("Files to remove: %s", mapping.file_names)
                 self._remove_entry(uid=uid, mapping=mapping)
