@@ -2,6 +2,7 @@ from typing import Any
 from typing import Optional
 
 from ytdl_sub.config.defaults import DEFAULT_DOWNLOAD_ARCHIVE_NAME
+from ytdl_sub.config.defaults import DEFAULT_REMOVED_FILE_CLEANUP
 from ytdl_sub.validators.file_path_validators import OverridesStringFormatterFilePathValidator
 from ytdl_sub.validators.file_path_validators import StringFormatterFileNameValidator
 from ytdl_sub.validators.strict_dict_validator import StrictDictValidator
@@ -71,6 +72,7 @@ class OutputOptions(StrictDictValidator):
              download_archive_name: ".ytdl-sub-{subscription_name}-download-archive.json"
              migrated_download_archive_name: ".ytdl-sub-{subscription_name_sanitized}-download-archive.json"
              maintain_download_archive: True
+             removed_file_cleanup: False
              keep_files_before: now
              keep_files_after: 19000101
     """
@@ -82,6 +84,7 @@ class OutputOptions(StrictDictValidator):
         "download_archive_name",
         "migrated_download_archive_name",
         "maintain_download_archive",
+        "removed_file_cleanup",
         "keep_files_before",
         "keep_files_after",
         "keep_max_files",
@@ -132,6 +135,17 @@ class OutputOptions(StrictDictValidator):
         self._maintain_download_archive = self._validate_key_if_present(
             key="maintain_download_archive", validator=BoolValidator, default=False
         )
+
+        self._removed_file_cleanup = self._validate_key_if_present(
+            key="removed_file_cleanup",
+            validator=BoolValidator,
+            default=DEFAULT_REMOVED_FILE_CLEANUP,
+        )
+
+        if self._removed_file_cleanup and not self.maintain_download_archive:
+            raise self._validation_exception(
+                "removed_file_cleanup requires maintain_download_archive set to True"
+            )
 
         self._keep_files_before = self._validate_key_if_present(
             "keep_files_before", StringDatetimeValidator
@@ -229,6 +243,20 @@ class OutputOptions(StrictDictValidator):
           Defaults to False.
         """
         return self._maintain_download_archive.value
+
+    @property
+    def removed_file_cleanup(self) -> bool:
+        """
+        :expected type: Optional[Boolean]
+        :description:
+          Requires ``maintain_download_archive`` set to True.
+
+          Deletes any files that are no longer in the current list. This is useful for keeping the
+          output directory clean of files that are no longer in the subscription or playlist.
+
+          Defaults to False.
+        """
+        return self._removed_file_cleanup.value
 
     @property
     def keep_files_before(self) -> Optional[StringDatetimeValidator]:

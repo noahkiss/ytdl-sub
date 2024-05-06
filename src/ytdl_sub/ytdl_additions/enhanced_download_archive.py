@@ -591,6 +591,21 @@ class EnhancedDownloadArchive:
 
         return self
 
+    def remove_unmatched_files(self, entry_ids: List[str]):
+        """
+        Checks all entries within the mappings. If any entries do not match the files in the output, delete them.
+
+        Parameters
+        ----------
+        entry_ids
+            List of entry ids to keep
+        """
+        mappings = self.mapping.entry_mappings
+
+        for uid, mapping in mappings.items():
+            if uid not in entry_ids:
+                self._remove_entry(uid=uid, mapping=mapping)
+
     def save_download_mappings(self) -> "EnhancedDownloadArchive":
         """
         Saves the updated download mappings to the output directory if any files were changed.
