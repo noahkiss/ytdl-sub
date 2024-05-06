@@ -602,9 +602,17 @@ class EnhancedDownloadArchive:
         """
         mappings = self.mapping.entry_mappings
 
+        logger.info("Checking for unmatched files in the output directory")
+        logger.info("IDs in the mapping: %s", list(mappings.keys()))
+        logger.info("IDs to keep: %s", entry_ids)
+
         for uid, mapping in list(mappings.items()):
             if uid not in entry_ids:
+                logger.info("Removing unmatched files for entry %s", uid)
+                logger.info("Files to remove: %s", mapping.file_names)
                 self._remove_entry(uid=uid, mapping=mapping)
+
+        self.save_download_mappings()
 
     def save_download_mappings(self) -> "EnhancedDownloadArchive":
         """
